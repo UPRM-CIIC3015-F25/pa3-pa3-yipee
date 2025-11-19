@@ -151,9 +151,9 @@ class DeckManager:
                  Rank.EIGHT, Rank.NINE, Rank.TEN, Rank.JACK, Rank.QUEEN, Rank.KING]
         for suit in suits:
             for rank in ranks:
-                image = cardImages[(suit, rank)]
-                if image in cardImages:
-                    deck.append(Card(suit=suit, rank=rank, image=image))
+                    if (suit, rank) in cardImages:
+                        image = cardImages[(suit, rank)]
+                        deck.append(Card(suit=suit, rank=rank, image=image))
         return deck
 
     # TODO (TASK 5.1): Complete the priceMap variable by assigning each joker a price.
