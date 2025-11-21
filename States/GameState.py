@@ -554,8 +554,33 @@ class GameState(State):
     #   with the ones after it. Depending on the mode, sort by rank first or suit first, swapping cards when needed
     #   until the entire hand is ordered correctly.
     def SortCards(self, sort_by: str = "suit"):
-        suitOrder = [Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS, Suit.SPADES]         # Define the order of suits
-        self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+        suitOrder = [Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS, Suit.SPADES] # Define the order of suits
+        if sort_by == "suit":
+            hearts = []
+            clubs = []
+            diamonds = []
+            spades = []
+            for card in self.hand:
+                if card.suit == Suit.HEARTS:
+                    hearts.append(card)
+                elif card.suit == Suit.CLUBS:
+                    clubs.append(card)
+                elif card.suit == Suit.DIAMONDS:
+                    diamonds.append(card)
+                elif card.suit == Suit.SPADES:
+                    spades.append(card)
+            self.hand = hearts + clubs + diamonds + spades
+            self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+        else:
+            rank_order = [Rank.KING, Rank.QUEEN, Rank.JACK, Rank.TEN, Rank.NINE,Rank.EIGHT,
+                          Rank.SEVEN, Rank.SIX, Rank.FIVE, Rank.FOUR, Rank.THREE, Rank.TWO,Rank.ACE,]
+            out = []
+            for rank in rank_order:
+                for card in self.hand:
+                    if card.rank == rank:
+                        out.append(card)
+            self.hand = out
+            self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
 
     def checkHoverCards(self):
         mousePos = pygame.mouse.get_pos()
@@ -817,4 +842,8 @@ class GameState(State):
     #   recursion finishes, reset card selections, clear any display text or tracking lists, and
     #   update the visual layout of the player's hand.
     def discardCards(self, removeFromHand: bool):
+        if len(self.cardsSelectedList) == 0:
+            return
+        else:
+            return self.discardCards(self.cardsSelectedList.remove(self.cardsSelectedList[0]), )
         self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
