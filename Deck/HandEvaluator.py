@@ -10,4 +10,65 @@ from Cards.Card import Card, Rank
 #   and flags to determine if the hand is: "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind",
 #   "Two Pair", "One Pair", or "High Card". Return a string with the correct hand type at the end.
 def evaluate_hand(hand: list[Card]):
-    return "High Card" # If none of the above, it's High Card
+    rank_order = [Rank.KING, Rank.QUEEN, Rank.JACK, Rank.TEN, Rank.NINE,Rank.EIGHT,
+                          Rank.SEVEN, Rank.SIX, Rank.FIVE, Rank.FOUR, Rank.THREE, Rank.TWO,Rank.ACE,]
+    suits = []
+    ranks = []
+    for card in hand:
+        ranks.append(card.rank)
+        suits.append(card.suit)
+    Suits = {}
+    Ranks = {}
+    for suit in suits:
+        if suit not in Suits:
+            Suits[suit] = 1
+        else:
+            Suits[suit] += 1
+    for rank in ranks:
+        if rank not in Ranks:
+            Ranks[rank] = 1
+        else:
+            Ranks[rank] += 1
+
+    four_of_a_kind = False
+    flush = False
+    straight = False
+    three_of_a_kind = False
+    quantity_of_one_pair = 0
+    one_pair = False
+    for rank in Ranks:
+        if Ranks[rank] == 4:
+            four_of_a_kind = True
+        if Ranks[rank] == 3:
+            three_of_a_kind = True
+        if Ranks[rank] == 2:
+            one_pair = True
+            quantity_of_one_pair += 1
+    for suit in Suits:
+        if Suits[suit] == 5:
+            flush = True
+    def rank_index(i):
+        return rank_order.index(i)
+    ranks.sort(key=rank_index)
+    first_index = rank_index(ranks[0])
+    if ranks == rank_order[first_index:first_index+5]:
+        straight = True
+
+    if straight and flush:
+        return "Straight Flush"
+    elif four_of_a_kind:
+        return "Four of a Kind"
+    elif three_of_a_kind and one_pair:
+        return "Full House"
+    elif flush:
+        return "Flush"
+    elif straight:
+        return "Straight"
+    elif three_of_a_kind:
+        return "Three of a Kind"
+    elif quantity_of_one_pair == 2:
+        return "Two Pair"
+    elif one_pair:
+        return "One Pair"
+    else:
+        return "High Card" # If none of the above, it's High Card
