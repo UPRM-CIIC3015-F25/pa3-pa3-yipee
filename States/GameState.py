@@ -799,6 +799,65 @@ class GameState(State):
 
         # ------------------- Apply Joker effects -------------------
         owned = set(self.playerJokers)
+        hand_cards = used_cards
+        hands_played = 0
+        amountOfHands = self.playerInfo.amountOfHands
+        procrastinate = False
+
+        if "The Joker" in owned:
+            hand_mult += 4
+            self.activated_jokers.add("The Joker")
+
+        if "Micheal Myers" in owned:
+            hand_mult += random.randint(0, 23)
+            self.activated_jokers.add("Micheal Myers")
+
+        if "Fibonacci" in owned:
+            special_ranks = {1, 2, 3, 5, 8}
+            count = 0
+            for c in hand_cards:
+                if c.rank.value in special_ranks:
+                    count += 1
+            hand_mult += 8 * count
+            if count > 0:
+                self.activated_jokers.add("Fibonacci")
+
+        if "Gauntlet" in owned:
+            total_chips += 250
+            self.maxHandSize -= 2
+            self.activated_jokers.add("Gauntlet")
+
+        if "Ogre" in owned:
+            hand_mult += 3 * len(owned)
+            self.activated_jokers.add("Ogre")
+
+        if "Straw Hat" in owned:
+            total_chips += (100 - 5 * hands_played)
+            self.activated_jokers.add("Straw Hat")
+
+        if "Hog Rider" in owned:
+            if hand_name == "Straight":
+                total_chips += 100
+                self.activated_jokers.add("Hog Rider")
+
+        if "? Block" in owned:
+            if len(hand_cards) == 4:
+                total_chips += 4
+                self.activated_jokers.add("? Block")
+
+        if "Hogwarts" in owned:
+            ace_count = 0
+            for c in hand_cards:
+                if c.rank.value == 1:
+                    ace_count += 1
+            if ace_count > 0:
+                hand_mult += 4 * ace_count
+                total_chips += 20 * ace_count
+                self.activated_jokers.add("Hogwarts")
+
+        if "802" in owned and amountOfHands == 0:
+            procrastinate = True
+            self.activated_jokers.add("802")
         # TODO (TASK 5.2): Let the Joker mayhem begin! Implement each Joker’s effect using the Joker table as reference.
         #   Follow this structure for consistency:
         #   if "joker card name" in owned:
@@ -806,7 +865,8 @@ class GameState(State):
         #       self.activated_jokers.add("joker card name")
         #   The last line ensures the Joker is visibly active and its effects are properly applied.
 
-        procrastinate = False
+
+
 
         # commit modified player multiplier and chips
         self.playerInfo.playerMultiplier = hand_mult
